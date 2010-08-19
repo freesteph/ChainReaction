@@ -1,19 +1,19 @@
 using GtkClutter;
+using Gee;
 
-public class Bubble.Main {
+public class Bubbles.Main {
 
+	protected const int BUBBLE_RADIUS = 30;
+	protected const int BUBBLE_WIDTH_EXPANDED = 50;
 	
 	public static int main (string []args) {
 		GtkClutter.init (ref args);
 		
-		var board = new Board ();
+		var board = new Board (100);
 		board.run ();
 
 		Gtk.main ();
 		return 0;
 	}
 
-	public static Clutter.Color[]? generate_colors () {
-		return null;
-	}
 }
