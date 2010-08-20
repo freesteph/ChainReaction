@@ -47,7 +47,7 @@ public class Bubbles.Board {
 			red = (uint8)Random.int_range (0, 255);
 			green = (uint8)Random.int_range (0, 255);
 			blue = (uint8)Random.int_range (0, 255);
-			b = new Bubble ( { red, green, blue, 255 } );
+			b = new Bubble ( { red, green, blue, (uint8)Main.BUBBLE_OPACITY } );
 			population--;
 		}
 
