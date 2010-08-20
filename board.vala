@@ -57,6 +57,7 @@ public class Bubbles.Board {
 			x = Random.int_range (0, (int)stage.width - Main.BUBBLE_RADIUS);
 			y = Random.int_range (0, (int)stage.height - Main.BUBBLE_RADIUS);
 			bubble.set_position ((int)x, (int)y);
+			bubble.move (this.stage);
 		}
 
 		window.show_all ();
