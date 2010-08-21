@@ -10,7 +10,7 @@ public class Bubbles.Main {
 	public static int main (string []args) {
 		GtkClutter.init (ref args);
 		
-		var board = new Board (100);
+		var board = new Board (1);
 		board.run ();
 
 		Gtk.main ();

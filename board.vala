@@ -41,13 +41,13 @@ public class Bubbles.Board {
 
 		bubbles = new Gee.ArrayList <Bubble> ();
 		uint8 red, green, blue;
-		var b = new Bubble (Clutter.Color.from_string ("red"));
+		var b = new Bubble (Clutter.Color.from_string ("red"), this.stage);
 		while (population > 0) {
 			bubbles.add (b);
 			red = (uint8)Random.int_range (0, 255);
 			green = (uint8)Random.int_range (0, 255);
 			blue = (uint8)Random.int_range (0, 255);
-			b = new Bubble ( { red, green, blue, (uint8)Main.BUBBLE_OPACITY } );
+			b = new Bubble ( { red, green, blue, (uint8)Main.BUBBLE_OPACITY }, this.stage);
 			population--;
 		}
 
@@ -57,7 +57,7 @@ public class Bubbles.Board {
 			x = Random.int_range (0, (int)stage.width - Main.BUBBLE_RADIUS);
 			y = Random.int_range (0, (int)stage.height - Main.BUBBLE_RADIUS);
 			bubble.set_position ((int)x, (int)y);
-			bubble.move (this.stage);
+			bubble.move ();
 		}
 
 		window.show_all ();
