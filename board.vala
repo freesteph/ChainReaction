@@ -14,6 +14,7 @@ public class Bubbles.Board {
 	/* data */
 	private uint population;
 	private Gee.ArrayList<Bubble> bubbles;
+	private CursorBubble pointer;
 
 	// linked list ? FIXME
 
@@ -60,6 +61,15 @@ public class Bubbles.Board {
 			bubble.move ();
 		}
 
+		pointer = new CursorBubble (this.stage);
+		this.stage.add_actor (pointer);
+
+		this.stage.motion_event.connect (_on_motion_event);
 		window.show_all ();
+	}
+
+	public bool _on_motion_event (Clutter.MotionEvent event) {
+		this.pointer.set_position (event.x, event.y);
+		return true;
 	}
 }
