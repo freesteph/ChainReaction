@@ -29,7 +29,8 @@ public class Bubbles.BubbleOther : Bubble {
 		alpha = new Clutter.Alpha.full (timeline, Clutter.AnimationMode.LINEAR);
 		behaviour = new Clutter.BehaviourPath (alpha, path);
 		behaviour.apply (this);
-		
+
+		// FIXME : constants
 		this.set_scale (0.4, 0.4);
 	}
 
