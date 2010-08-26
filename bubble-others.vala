@@ -1,7 +1,7 @@
 public class Bubbles.BubbleOther : Bubble {
 
 	private double angle;
-
+	private static const double SCALE_FACTOR = 0.4;
 	private Clutter.Path path;
 	private Clutter.BehaviourPath behaviour;
 	private Clutter.Alpha alpha;
@@ -31,7 +31,7 @@ public class Bubbles.BubbleOther : Bubble {
 		behaviour.apply (this);
 
 		// FIXME : constants
-		this.set_scale (0.4, 0.4);
+		this.set_scale_with_gravity (SCALE_FACTOR, SCALE_FACTOR, Clutter.Gravity.CENTER);
 	}
 
 	private void _on_new_frame (Clutter.Timeline time, int msecs) {
