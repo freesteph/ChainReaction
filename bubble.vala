@@ -48,18 +48,13 @@ public class Bubbles.Bubble : Clutter.CairoTexture {
 	private void _on_timeline_complete (Clutter.Timeline time) {
 			var newx = (int)this.x;
 			var newy = (int)this.y;
-			debug ("The previous angle was %g", angle);
 
-			angle = -angle;
-			while (angle < 0) (angle += Math.PI*2);
-			while (angle > Math.PI*2) (angle -= Math.PI*2);
-
-			debug ("The new angle is %g", angle);
 			this.path.clear ();
 			this.path.add_move_to (newx, newy);
 			var dest = calculate_path ();
 			debug ("The next point NOW is %i, %i", dest.x, dest.y);
 			this.path.add_line_to (dest.x, dest.y);
+			timeline.duration = this.path.length * 7;
 			timeline.start ();
 	}
 
@@ -86,55 +81,76 @@ public class Bubbles.Bubble : Clutter.CairoTexture {
 		double w = stage.width;
 		double h = stage.height;
 		double angle = this.angle;
+		bool horizontal_hit = false;
 
 		if (angle < Math.PI/2) {
 			/* We're going up-right */
-			opposite = Math.tan (Math.PI - angle) * y;
-			if (x + opposite > w) {
-				/* if we're going further that the length of the top edge,
-				   it means we're going to bounce on the left edge before so
-				   we recalculate with the left edge triangle. */
-				opposite = Math.tan (angle) * (w - x);
-				dx = w;
-				dy = y - opposite;
-			} else {
+			opposite = Math.tan (angle) * (w - x);
+			if (y - opposite < 0) {
+				/* we're hitting the top */
+				horizontal_hit = true;
+				opposite = Math.tan (Math.PI/2 - angle) * y;
 				dx = x + opposite;
 				dy = 0;
+			} else {
+				/* we're hitting the right edge */
+				dx = w;
+				dy = y - opposite;
 			}
 		} else if (angle < Math.PI) {
 			/* up-left */
 			opposite = Math.tan (angle - Math.PI/2) * y;
 			if (x - opposite < 0) {
+				/* right hit */
 				opposite = Math.tan (Math.PI - angle) * x;
 				dx = 0;
 				dy = y - opposite;
 			} else {
-				dx = x - opposite;
+				/* top hit */
+				horizontal_hit = true;
 				dy = 0;
+				dx = x - opposite;
 			}
-		} else if (angle < Math.PI * 1.5) {
+		} else if (angle < Math.PI*1.5) {
 			/* down-left */
 			opposite = Math.tan (angle - Math.PI) * x;
 			if (y + opposite > h) {
-				opposite = Math.tan (Math.PI * 1.5 - angle) * (h - y);
-				dx = h;
-				dy = x - opposite;
+				/* bottom hit */
+				horizontal_hit = true;
+				opposite = Math.tan (Math.PI*1.5 - angle) * (h - x);
+				dx = x - opposite;
+				dy = h;
 			} else {
+				/* right hit */
 				dx = 0;
 				dy = y + opposite;
 			}
 		} else {
 			/* down-right */
-			opposite = Math.tan (angle - Math.PI * 1.5) * (h - y);
+			opposite = Math.tan (angle - Math.PI*1.5) * (h - y);
 			if (x + opposite > w) {
-				opposite = Math.tan (Math.PI * 2 - angle) * (w - x);
+				/* left hit */
+				opposite = Math.tan (Math.PI*2 - angle) * (h - x);
 				dx = w;
 				dy = y + opposite;
 			} else {
+				/* bottom hit */
+				horizontal_hit = true;
 				dx = x + opposite;
 				dy = h;
 			}
 		}
+
+		if (horizontal_hit) {
+			angle = Math.PI*2 - angle;
+		} else {
+			angle = Math.PI - angle;
+			if (angle < 0) (angle += Math.PI*2);
+		}
+
+		this.angle = angle;
+//		assert (dx >= 0 && dx <= w);
+//		assert (dy >= 0 && dy <= h);
 		destination.x = (int) dx;
 		destination.y = (int) dy;
 		return destination;
