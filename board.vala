@@ -12,9 +12,9 @@ public class Bubbles.Board {
 	private Clutter.Stage stage;
 
 	/* data */
-	private static bool freeze = false;
+	public static bool freeze = false;
 	private uint population;
-	private Gee.ArrayList<Bubble> bubbles;
+	private Gee.ArrayList<BubbleOther> bubbles;
 	private Gee.ArrayList<Bubble> frozen;
 	private CursorBubble pointer;
 
@@ -42,28 +42,29 @@ public class Bubbles.Board {
 	public void run () {
 		assert (window != null);
 
-		bubbles = new Gee.ArrayList <Bubble> ();
+		bubbles = new Gee.ArrayList <BubbleOther> ();
 		uint8 red, green, blue;
-		var b = new Bubble (Clutter.Color.from_string ("red"), this.stage);
+		var b = new BubbleOther (this.stage, Clutter.Color.from_string ("red"));
 		while (population > 0) {
 			bubbles.add (b);
 			red = (uint8)Random.int_range (0, 255);
 			green = (uint8)Random.int_range (0, 255);
 			blue = (uint8)Random.int_range (0, 255);
-			b = new Bubble ( { red, green, blue, (uint8)Main.BUBBLE_OPACITY }, this.stage);
+			b = new BubbleOther (this.stage,  { red, green, blue, 255 });
 			population--;
 		}
 
 		int x, y;
-		foreach (Bubble bubble in bubbles) {
+		foreach (BubbleOther bubble in bubbles) {
 			stage.add_actor (bubble);
-			x = Random.int_range (0, (int)stage.width - Main.BUBBLE_RADIUS);
-			y = Random.int_range (0, (int)stage.height - Main.BUBBLE_RADIUS);
+			// FIXME : constant
+			x = Random.int_range (0, (int)stage.width - 30);
+			y = Random.int_range (0, (int)stage.height - 30);
 			bubble.set_position ((int)x, (int)y);
 			bubble.move ();
 		}
 
-		pointer = new CursorBubble (this.stage);
+		pointer = new CursorBubble (this.stage, { 0, 0, 0, 255 });
 		this.stage.add_actor (pointer);
 
 		/* events */
