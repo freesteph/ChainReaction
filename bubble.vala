@@ -16,7 +16,15 @@ public class Bubbles.Bubble : Clutter.CairoTexture {
 	   color are enough. */
 	public Bubble (Clutter.Color color, Clutter.Stage s) {
 		stage = s;
-		angle = Random.double_range (0, 2*Math.PI);
+		do {
+			angle = Random.double_range (0, 2*Math.PI);
+			/* We random it again if it's too close to right angles */
+		} while ((angle < Math.PI/2 + 0.10 && angle > Math.PI/2 - 0.10) ||
+				 (angle < Math.PI + 0.10 && angle > Math.PI - 0.10) ||
+				 (angle < Math.PI*1.5 + 0.10 && angle > Math.PI*1.5 - 0.10) ||
+				 (angle < 0.10) ||
+				 (angle > Math.PI*2 - 0.10));
+		//angle = Math.PI * 0.3;
 		this.set_anchor_point_from_gravity (Clutter.Gravity.CENTER);
 		this.set_surface_size (Main.BUBBLE_RADIUS*2, Main.BUBBLE_RADIUS*2);
 
@@ -30,62 +38,114 @@ public class Bubbles.Bubble : Clutter.CairoTexture {
 		path = new Clutter.Path ();
 
 		timeline = new Clutter.Timeline (1000);
-		timeline.loop = true;
-
+		timeline.completed.connect (_on_timeline_complete);
 		alpha = new Clutter.Alpha.full (timeline, Clutter.AnimationMode.LINEAR);
 		behaviour = new Clutter.BehaviourPath (alpha, path);
 		behaviour.knot_reached.connect ( _on_knot_reached );
 		behaviour.apply (this);
 	}
 
+	private void _on_timeline_complete (Clutter.Timeline time) {
+			var newx = (int)this.x;
+			var newy = (int)this.y;
+			debug ("The previous angle was %g", angle);
+
+			angle = -angle;
+			while (angle < 0) (angle += Math.PI*2);
+			while (angle > Math.PI*2) (angle -= Math.PI*2);
+
+			debug ("The new angle is %g", angle);
+			this.path.clear ();
+			this.path.add_move_to (newx, newy);
+			var dest = calculate_path ();
+			debug ("The next point NOW is %i, %i", dest.x, dest.y);
+			this.path.add_line_to (dest.x, dest.y);
+			timeline.start ();
+	}
+
 	private void _on_knot_reached (Clutter.BehaviourPath bpath, uint num) {
-		if (num == this.path.get_n_nodes () - 1) {
-			double opposite;
-			if (this.angle < Math.PI/2) {
-				/* We're going up-right */
-				opposite = this.x + Math.sin (this.angle) * this.y;
-				if (opposite > stage.width) {
-					opposite = Math.sin (this.angle) * (stage.width - this.x);
-					this.path.add_line_to ((int)stage.width, (int)(this.x - opposite));
-				} else {
-					this.path.add_line_to (0, (int)(this.x + opposite));
-				}
-			} else if (this.angle < Math.PI) {
-				/* up-left */
-				opposite = this.x - Math.sin (this.angle - Math.PI/2) * this.y;
-				if (opposite < 0) {
-					opposite = this.y - Math.sin (Math.PI - this.angle) * (this.x);
-					this.path.add_line_to (0, (int)opposite);
-				} else {
-					this.path.add_line_to ((int)opposite, 0);
-				}
-			} else if (this.angle < Math.PI * 1.5) {
-				/* down-left */
-				opposite = this.x - Math.sin (Math.PI*1.5 - this.angle) * (stage.height - this.y);
-				if (opposite < 0) {
-					opposite = this.y + Math.sin (this.angle - Math.PI) * this.x;
-					this.path.add_line_to (0, (int)opposite);
-				} else {
-					this.path.add_line_to ((int)stage.height, (int)opposite);
-				}
+		/*	debug ("We're at %G/%G", num, this.path.get_n_nodes ());
+		if (num == this.path.get_n_nodes () - 1 && num != 0) {
+			debug ("We're in with %G!", num);
+			var newx = (int)this.x;
+			var newy = (int)this.y;
+			this.path.clear ();
+			this.path.add_move_to (newx, newy);
+			var dest = calculate_path ();
+			debug ("The next point NOW is %i, %i", dest.x, dest.y);
+			this.path.add_line_to (dest.x, dest.y);
+			}*/
+	}
+
+	private Clutter.Knot calculate_path () {
+		Clutter.Knot destination = { 0, 0 };
+		double dx, dy;
+		double opposite;
+		double x = this.x;
+		double y = this.y;
+		double w = stage.width;
+		double h = stage.height;
+		double angle = this.angle;
+
+		if (angle < Math.PI/2) {
+			/* We're going up-right */
+			opposite = Math.tan (Math.PI - angle) * y;
+			if (x + opposite > w) {
+				/* if we're going further that the length of the top edge,
+				   it means we're going to bounce on the left edge before so
+				   we recalculate with the left edge triangle. */
+				opposite = Math.tan (angle) * (w - x);
+				dx = w;
+				dy = y - opposite;
 			} else {
-				/* down-right */
-				opposite = this.y + Math.sin (2*Math.PI - this.angle) * (stage.width - this.x);
-				if (opposite > stage.height) {
-					opposite = this.x + Math.sin (this.angle - Math.PI*1.5) * (stage.height - this.y);
-					this.path.add_line_to ((int)stage.height, (int)opposite);
-				} else {
-					this.path.add_line_to ((int)stage.width, (int)opposite);
-				}
+				dx = x + opposite;
+				dy = 0;
 			}
-			timeline.duration *= 2;
-			this.angle = Math.fabs (Math.PI - this.angle);
+		} else if (angle < Math.PI) {
+			/* up-left */
+			opposite = Math.tan (angle - Math.PI/2) * y;
+			if (x - opposite < 0) {
+				opposite = Math.tan (Math.PI - angle) * x;
+				dx = 0;
+				dy = y - opposite;
+			} else {
+				dx = x - opposite;
+				dy = 0;
+			}
+		} else if (angle < Math.PI * 1.5) {
+			/* down-left */
+			opposite = Math.tan (angle - Math.PI) * x;
+			if (y + opposite > h) {
+				opposite = Math.tan (Math.PI * 1.5 - angle) * (h - y);
+				dx = h;
+				dy = x - opposite;
+			} else {
+				dx = 0;
+				dy = y + opposite;
+			}
+		} else {
+			/* down-right */
+			opposite = Math.tan (angle - Math.PI * 1.5) * (h - y);
+			if (x + opposite > w) {
+				opposite = Math.tan (Math.PI * 2 - angle) * (w - x);
+				dx = w;
+				dy = y + opposite;
+			} else {
+				dx = x + opposite;
+				dy = h;
+			}
 		}
+		destination.x = (int) dx;
+		destination.y = (int) dy;
+		return destination;
 	}
 
 	public void move () {
+		path.clear ();
 		path.add_move_to ((int)this.x, (int)this.y);
-		path.add_line_to (0, (int)stage.width);
+		debug ("The first angle is : %g", this.angle);
+		var dest = calculate_path ();
+		path.add_line_to (dest.x, dest.y);
 		timeline.start ();
 	}
 }
