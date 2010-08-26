@@ -24,6 +24,9 @@ public class Bubbles.CursorBubble : Clutter.CairoTexture {
 		alpha = new Clutter.Alpha.full (timeline, Clutter.AnimationMode.LINEAR);
 		behaviour = new Clutter.BehaviourScale (alpha, 0, 0, 1, 1);
 		behaviour.apply (this);
+	}
 
+	public void expand () {
+		timeline.start ();
 	}
 }

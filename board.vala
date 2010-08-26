@@ -7,13 +7,15 @@ public class Bubbles.Board {
 	private Gtk.VBox vbox;
 	private GtkClutter.Embed embed;
 	private Gtk.Builder builder;
-	
+
 	/* actors */
 	private Clutter.Stage stage;
-	
+
 	/* data */
+	private static bool freeze = false;
 	private uint population;
 	private Gee.ArrayList<Bubble> bubbles;
+	private Gee.ArrayList<Bubble> frozen;
 	private CursorBubble pointer;
 
 	// linked list ? FIXME
@@ -27,7 +29,7 @@ public class Bubbles.Board {
 		} catch (Error e) {
 			error ("Unable to load UI file: %s", e.message);
 		}
-		
+
 		window = builder.get_object ("window1") as Gtk.Window;
 		vbox = builder.get_object ("vbox1") as Gtk.VBox;
 
@@ -64,12 +66,24 @@ public class Bubbles.Board {
 		pointer = new CursorBubble (this.stage);
 		this.stage.add_actor (pointer);
 
+		/* events */
 		this.stage.motion_event.connect (_on_motion_event);
+		this.stage.button_press_event.connect (_on_button_press_event);
 		window.show_all ();
 	}
 
 	public bool _on_motion_event (Clutter.MotionEvent event) {
-		this.pointer.set_position (event.x, event.y);
+		if (!freeze) {
+			this.pointer.set_position (event.x, event.y);
+		}
+		return true;
+	}
+
+	public bool _on_button_press_event (Clutter.ButtonEvent event) {
+		if (!freeze) {
+			freeze = true;
+			this.pointer.expand ();
+		}
 		return true;
 	}
 }
