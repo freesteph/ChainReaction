@@ -59,6 +59,7 @@ public class Bubbles.Board {
 			y = Random.int_range (0, (int)stage.height - 30);
 			b.set_position ((int)x, (int)y);
 			calculate_path (b);
+			b.path_complete.connect (_on_bubble_path_complete);
 			b.move ();
 
 			population--;
@@ -88,9 +89,11 @@ public class Bubbles.Board {
 		return true;
 	}
 
-	public void path_complete (BubbleOther b) {
+	public void _on_bubble_path_complete (BubbleOther b) {
+		debug ("Signal");
 		b.path.clear ();
 		calculate_path (b);
+		b.move ();
 	}
 
 	private void calculate_path (BubbleOther b) {

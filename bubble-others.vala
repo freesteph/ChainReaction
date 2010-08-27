@@ -26,7 +26,7 @@ public class Bubbles.BubbleOther : Bubble {
 
 		path = new Clutter.Path ();
 
-		timeline = new Clutter.Timeline (0);
+		timeline = new Clutter.Timeline (10);
 		timeline.completed.connect (_on_timeline_complete);
 		timeline.new_frame.connect (_on_new_frame);
 
@@ -49,6 +49,7 @@ public class Bubbles.BubbleOther : Bubble {
 	}
 
 	public void move () {
+		debug ("Path length = %g", path.length);
 		timeline.duration = path.length * 6;
 		timeline.start ();
 	}
