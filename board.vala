@@ -44,24 +44,24 @@ public class Bubbles.Board {
 
 		bubbles = new Gee.ArrayList <BubbleOther> ();
 		uint8 red, green, blue;
-		var b = new BubbleOther (this.stage, Clutter.Color.from_string ("red"));
+		int x,y;
+		BubbleOther b;
+
 		while (population > 0) {
-			bubbles.add (b);
 			red = (uint8)Random.int_range (0, 255);
 			green = (uint8)Random.int_range (0, 255);
 			blue = (uint8)Random.int_range (0, 255);
 			b = new BubbleOther (this.stage,  { red, green, blue, 255 });
-			population--;
-		}
 
-		int x, y;
-		foreach (BubbleOther bubble in bubbles) {
-			stage.add_actor (bubble);
-			// FIXME : constant
+			bubbles.add (b);
+			stage.add_actor (b);
+			//FIXME : constant
 			x = Random.int_range (0, (int)stage.width - 30);
 			y = Random.int_range (0, (int)stage.height - 30);
-			bubble.set_position ((int)x, (int)y);
-			bubble.move ();
+			b.set_position ((int)x, (int)y);
+			b.move ();
+
+			population--;
 		}
 
 		pointer = new CursorBubble (this.stage, { 0, 0, 0, 255 });
