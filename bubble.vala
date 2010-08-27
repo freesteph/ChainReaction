@@ -6,16 +6,12 @@ public abstract class Bubble : Clutter.CairoTexture {
 	private static const short OPACITY = 200;
 
 	private Cairo.Context cr;
-	// FIXME : not nice to store a ClutterStage in every bubble.
-	protected Clutter.Stage stage;
 
 	private Clutter.BehaviourScale behaviour_scale;
 	private Clutter.Alpha alphascale;
 	private Clutter.Timeline timescale;
 
-	public Bubble (Clutter.Stage s, Clutter.Color color) {
-		stage = s;
-		
+	public Bubble (Clutter.Color color) {
 		this.set_anchor_point_from_gravity (Clutter.Gravity.CENTER);
 		this.set_surface_size (RADIUS*2, RADIUS*2);
 		this.opacity = OPACITY;

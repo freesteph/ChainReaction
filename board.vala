@@ -50,7 +50,7 @@ public class Bubbles.Board {
 			red = (uint8)Random.int_range (0, 255);
 			green = (uint8)Random.int_range (0, 255);
 			blue = (uint8)Random.int_range (0, 255);
-			b = new BubbleOther (this.stage,  { red, green, blue, 255 });
+			b = new BubbleOther ({ red, green, blue, 255 });
 
 			bubbles.add (b);
 			this.stage.add_actor (b);
@@ -65,7 +65,7 @@ public class Bubbles.Board {
 			population--;
 		}
 
-		pointer = new CursorBubble (this.stage, { 0, 0, 0, 255 });
+		pointer = new CursorBubble ({ 0, 0, 0, 255 });
 		this.stage.add_actor (pointer);
 
 		/* events */

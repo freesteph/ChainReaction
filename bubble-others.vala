@@ -12,8 +12,8 @@ public class Bubbles.BubbleOther : Bubble {
 
 	/* FIXME : not so cool to have a bunch of random color. Maybe ~30
 	   color are enough. */
-	public BubbleOther (Clutter.Stage s, Clutter.Color color) {
-		base (s, color);
+	public BubbleOther (Clutter.Color color) {
+		base (color);
 		do {
 			angle = Random.double_range (0, 2*Math.PI);
 			/* We random it again if it's too close to right angles */
