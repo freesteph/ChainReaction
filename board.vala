@@ -15,7 +15,6 @@ public class Bubbles.Board {
 	public static bool freeze = false;
 	private uint population;
 	private Gee.ArrayList<BubbleOther> bubbles;
-	private Gee.ArrayList<Bubble> frozen;
 	private CursorBubble pointer;
 
 	// linked list ? FIXME
@@ -59,6 +58,7 @@ public class Bubbles.Board {
 			x = Random.int_range (0, (int)stage.width - 30);
 			y = Random.int_range (0, (int)stage.height - 30);
 			b.set_position ((int)x, (int)y);
+			calculate_path (b);
 			b.move ();
 
 			population--;
@@ -86,5 +86,92 @@ public class Bubbles.Board {
 			this.pointer.expand ();
 		}
 		return true;
+	}
+
+	public void path_complete (BubbleOther b) {
+		b.path.clear ();
+		calculate_path (b);
+	}
+
+	private void calculate_path (BubbleOther b) {
+		double dx, dy;
+		double opposite;
+		double x = b.x;
+		double y = b.y;
+		double w = this.stage.width;
+		double h = this.stage.height;
+		double angle = b.angle;
+		bool horizontal_hit = false;
+
+		if (angle < Math.PI/2) {
+			/* We're going up-right */
+			opposite = Math.tan (angle) * (w - x);
+			if (y - opposite < 0) {
+				/* we're hitting the top */
+				horizontal_hit = true;
+				opposite = Math.tan (Math.PI/2 - angle) * y;
+				dx = x + opposite;
+				dy = 0;
+			} else {
+				/* we're hitting the right edge */
+				dx = w;
+				dy = y - opposite;
+			}
+		} else if (angle < Math.PI) {
+			/* up-left */
+			opposite = Math.tan (angle - Math.PI/2) * y;
+			if (x - opposite < 0) {
+				/* right hit */
+				opposite = Math.tan (Math.PI - angle) * x;
+				dx = 0;
+				dy = y - opposite;
+			} else {
+				/* top hit */
+				horizontal_hit = true;
+				dy = 0;
+				dx = x - opposite;
+			}
+		} else if (angle < Math.PI*1.5) {
+			/* down-left */
+			opposite = Math.tan (angle - Math.PI) * x;
+			if (y + opposite > h) {
+				/* bottom hit */
+				horizontal_hit = true;
+				opposite = Math.tan (Math.PI*1.5 - angle) * (h - x);
+				dx = x - opposite;
+				dy = h;
+			} else {
+				/* right hit */
+				dx = 0;
+				dy = y + opposite;
+			}
+		} else {
+			/* down-right */
+			opposite = Math.tan (angle - Math.PI*1.5) * (h - y);
+			if (x + opposite > w) {
+				/* left hit */
+				opposite = Math.tan (Math.PI*2 - angle) * (h - x);
+				dx = w;
+				dy = y + opposite;
+			} else {
+				/* bottom hit */
+				horizontal_hit = true;
+				dx = x + opposite;
+				dy = h;
+			}
+		}
+
+		if (horizontal_hit) {
+			angle = Math.PI*2 - angle;
+		} else {
+			angle = Math.PI - angle;
+			if (angle < 0) (angle += Math.PI*2);
+		}
+
+		b.angle = angle;
+//		assert (dx >= 0 && dx <= w);
+//		assert (dy >= 0 && dy <= h);
+		b.path.add_move_to ((int)b.x, (int)b.y);
+		b.path.add_line_to ((int)dx, (int)dy);
 	}
 }
