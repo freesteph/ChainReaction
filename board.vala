@@ -90,7 +90,6 @@ public class Bubbles.Board {
 	}
 
 	public void _on_bubble_path_complete (BubbleOther b) {
-		debug ("Signal");
 		b.path.clear ();
 		calculate_path (b);
 		b.move ();

@@ -49,7 +49,6 @@ public class Bubbles.BubbleOther : Bubble {
 	}
 
 	public void move () {
-		debug ("Path length = %g", path.length);
 		timeline.duration = path.length * 6;
 		timeline.start ();
 	}
