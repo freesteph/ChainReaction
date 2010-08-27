@@ -54,7 +54,7 @@ public class Bubbles.Board {
 			b = new BubbleOther (this.stage,  { red, green, blue, 255 });
 
 			bubbles.add (b);
-			stage.add_actor (b);
+			this.stage.add_actor (b);
 			//FIXME : constant
 			x = Random.int_range (0, (int)stage.width - 30);
 			y = Random.int_range (0, (int)stage.height - 30);

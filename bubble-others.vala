@@ -7,6 +7,13 @@ public class Bubbles.BubbleOther : Bubble {
 	private Clutter.Alpha alpha;
 	private Clutter.Timeline timeline;
 
+	struct point {
+		int x;
+		int y;
+	}
+
+	private static Gee.ArrayList<point?> frozen_points;
+
 	/* FIXME : not so cool to have a bunch of random color. Maybe ~30
 	   color are enough. */
 	public BubbleOther (Clutter.Stage s, Clutter.Color color) {
@@ -14,6 +21,7 @@ public class Bubbles.BubbleOther : Bubble {
 		do {
 			angle = Random.double_range (0, 2*Math.PI);
 			/* We random it again if it's too close to right angles */
+			//FIXME : constant
 		} while ((angle < Math.PI/2 + 0.10 && angle > Math.PI/2 - 0.10) ||
 				 (angle < Math.PI + 0.10 && angle > Math.PI - 0.10) ||
 				 (angle < Math.PI*1.5 + 0.10 && angle > Math.PI*1.5 - 0.10) ||
@@ -30,7 +38,6 @@ public class Bubbles.BubbleOther : Bubble {
 		behaviour = new Clutter.BehaviourPath (alpha, path);
 		behaviour.apply (this);
 
-		// FIXME : constants
 		this.set_scale_with_gravity (SCALE_FACTOR, SCALE_FACTOR, Clutter.Gravity.CENTER);
 	}
 
