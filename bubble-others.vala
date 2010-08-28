@@ -40,7 +40,7 @@ public class Bubbles.BubbleOther : Bubble {
 	private void _on_new_frame (Clutter.Timeline time, int msecs) {
 		if (Board.freeze) {
 			this.expand ();
-			timeline.pause ();
+			this.stop ();
 		}
 	}
 
@@ -51,5 +51,9 @@ public class Bubbles.BubbleOther : Bubble {
 	public void move () {
 		timeline.duration = path.length * 6;
 		timeline.start ();
+	}
+   
+	public void stop () {
+		timeline.pause ();
 	}
 }
