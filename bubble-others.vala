@@ -1,15 +1,17 @@
 public class Bubbles.BubbleOther : Bubble {
 
-	public double angle;
 	private static const double SCALE_FACTOR = 0.4;
+
 	//FIXME : public = bad
+	public double angle;
 	public Clutter.Path path;
+
 	private Clutter.BehaviourPath behaviour;
 	private Clutter.Alpha alpha;
 	private Clutter.Timeline timeline;
 
 	public signal void path_complete (BubbleOther b);
-
+	public signal void new_position (BubbleOther b);
 	/* FIXME : not so cool to have a bunch of random color. Maybe ~30
 	   color are enough. */
 	public BubbleOther (Clutter.Color color) {
@@ -38,10 +40,7 @@ public class Bubbles.BubbleOther : Bubble {
 	}
 
 	private void _on_new_frame (Clutter.Timeline time, int msecs) {
-		if (Board.freeze) {
-			this.expand ();
-			this.stop ();
-		}
+		new_position (this);
 	}
 
 	private void _on_timeline_complete (Clutter.Timeline time) {
@@ -52,7 +51,7 @@ public class Bubbles.BubbleOther : Bubble {
 		timeline.duration = path.length * 6;
 		timeline.start ();
 	}
-   
+
 	public void stop () {
 		timeline.pause ();
 	}

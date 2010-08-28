@@ -1,7 +1,7 @@
 
 public abstract class Bubble : Clutter.CairoTexture {
 
-	private static const short RADIUS = 30;
+	public static const short RADIUS = 30;
 	private static const short EXPAND_TIME = 200;
 	private static const short OPACITY = 200;
 
