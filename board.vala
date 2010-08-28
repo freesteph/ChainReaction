@@ -1,5 +1,8 @@
 using GtkClutter;
 
+/* TODO : implement levels */
+/* TODO : implement difficulty */
+/* TODO : implement announce ("get 2 of 10 bubbles") */
 public class Bubbles.Board {
 
 	/* widget */

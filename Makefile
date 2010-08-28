@@ -6,3 +6,8 @@ bubble: bubble.vala board.vala main.vala bubble-cursor.vala bubble-others.vala
 
 clean:
 	rm -rf *.c *~ bubble
+
+todo:
+	grep "TODO" *.vala --color
+fixme:
+	grep "FIXME" *.vala --color
