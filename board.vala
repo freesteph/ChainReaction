@@ -130,6 +130,7 @@ public class Bubbles.Board {
 		double angle = b.angle;
 		bool horizontal_hit = false;
 
+		// FIXME : correct offset bouncing.
 		if (angle < Math.PI/2) {
 			/* We're going up-right */
 			opposite = Math.tan (angle) * (w - x);
@@ -196,8 +197,9 @@ public class Bubbles.Board {
 		}
 
 		b.angle = angle;
-//		assert (dx >= 0 && dx <= w);
-//		assert (dy >= 0 && dy <= h);
+		//FIXME : why does the distance go negative sometimes ?
+		// assert (dx >= 0 && dx <= w);
+		// assert (dy >= 0 && dy <= h);
 		b.path.add_move_to ((int)b.x, (int)b.y);
 		b.path.add_line_to ((int)dx, (int)dy);
 	}
