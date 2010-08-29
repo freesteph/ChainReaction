@@ -18,7 +18,7 @@ public class Bubbles.Board {
 	public static bool freeze = false;
 	private uint population;
 	private Gee.ArrayList<BubbleOther> bubbles;
-	private Gee.ArrayList<Bubble> frozen_points;
+	private Gee.ArrayList<Bubble> frozen_bubbles;
 	private CursorBubble pointer;
 
 	// linked list ? FIXME
@@ -70,7 +70,7 @@ public class Bubbles.Board {
 			population--;
 		}
 
-		frozen_points = new Gee.ArrayList<Bubble> ();
+		frozen_bubbles = new Gee.ArrayList<Bubble> ();
 		pointer = new CursorBubble ({ 0, 0, 0, 255 });
 		pointer.end_expansion.connect (_on_bubble_fadeout);
 		this.stage.add_actor (pointer);
@@ -91,7 +91,7 @@ public class Bubbles.Board {
 	public bool _on_button_press_event (Clutter.ButtonEvent event) {
 		if (!freeze) {
 			freeze = true;
-			frozen_points.add (pointer);
+			frozen_bubbles.add (pointer);
 			foreach (BubbleOther b in bubbles) {
 				b.new_position.connect (_on_bubble_position_at_freeze);
 			}
@@ -101,14 +101,14 @@ public class Bubbles.Board {
 	}
 
 	public void _on_bubble_position_at_freeze (BubbleOther b) {
-		foreach (Bubble frozen in frozen_points) {
+		foreach (Bubble frozen in frozen_bubbles) {
 			if ((Math.fabs (b.x - frozen.x) <= Bubble.RADIUS*2) &&
 				(Math.fabs (b.y - frozen.y) <= Bubble.RADIUS*2)) {
 				/* the center of the bubbles are close enough to collide */
 				b.stop ();
 				b.expand ();
 				bubbles.remove (b);
-				frozen_points.add (b);
+				frozen_bubbles.add (b);
 				break;
 			}
 		}
@@ -122,8 +122,7 @@ public class Bubbles.Board {
 
 	public void _on_bubble_fadeout (Bubble b) {
 		b.fadeout ();
-		var removed = false;
-		frozen_points.remove (b);
+		frozen_bubbles.remove (b);
 	}
 
 	private void calculate_path (BubbleOther b) {
