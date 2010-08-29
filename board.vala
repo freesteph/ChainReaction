@@ -64,6 +64,7 @@ public class Bubbles.Board {
 			b.set_position ((int)x, (int)y);
 			calculate_path (b);
 			b.path_complete.connect (_on_bubble_path_complete);
+			b.end_expansion.connect (_on_bubble_fadeout);
 			b.move ();
 
 			population--;
@@ -71,6 +72,7 @@ public class Bubbles.Board {
 
 		frozen_points = new Gee.ArrayList<Clutter.Knot?> ();
 		pointer = new CursorBubble ({ 0, 0, 0, 255 });
+		pointer.end_expansion.connect (_on_bubble_fadeout);
 		this.stage.add_actor (pointer);
 
 		/* events */
@@ -118,6 +120,19 @@ public class Bubbles.Board {
 		b.path.clear ();
 		calculate_path (b);
 		b.move ();
+	}
+
+	public void _on_bubble_fadeout (Bubble b) {
+		b.fadeout ();
+		var removed = false;
+		foreach (Clutter.Knot? k in frozen_points) {
+			if (k.x == b.x || k.y == b.y) {
+				frozen_points.remove (k);
+				removed = true;
+				break;
+			}
+		}
+		assert (removed == true);
 	}
 
 	private void calculate_path (BubbleOther b) {

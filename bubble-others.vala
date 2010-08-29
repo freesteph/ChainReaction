@@ -1,6 +1,7 @@
 public class Bubbles.BubbleOther : Bubble {
 
 	private static const double SCALE_FACTOR = 0.4;
+	private static const uint SPEED = 10;
 
 	//FIXME : public = bad
 	public double angle;
@@ -48,7 +49,7 @@ public class Bubbles.BubbleOther : Bubble {
 	}
 
 	public void move () {
-		timeline.duration = path.length * 6;
+		timeline.duration = path.length * SPEED;
 		timeline.start ();
 	}
 
