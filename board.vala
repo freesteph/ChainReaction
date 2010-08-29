@@ -18,7 +18,7 @@ public class Bubbles.Board {
 	public static bool freeze = false;
 	private uint population;
 	private Gee.ArrayList<BubbleOther> bubbles;
-	private Gee.ArrayList<Clutter.Knot?> frozen_points;
+	private Gee.ArrayList<Bubble> frozen_points;
 	private CursorBubble pointer;
 
 	// linked list ? FIXME
@@ -70,7 +70,7 @@ public class Bubbles.Board {
 			population--;
 		}
 
-		frozen_points = new Gee.ArrayList<Clutter.Knot?> ();
+		frozen_points = new Gee.ArrayList<Bubble> ();
 		pointer = new CursorBubble ({ 0, 0, 0, 255 });
 		pointer.end_expansion.connect (_on_bubble_fadeout);
 		this.stage.add_actor (pointer);
@@ -91,8 +91,7 @@ public class Bubbles.Board {
 	public bool _on_button_press_event (Clutter.ButtonEvent event) {
 		if (!freeze) {
 			freeze = true;
-			Clutter.Knot coords = ({ (int)pointer.x, (int)pointer.x });
-			frozen_points.add (coords);
+			frozen_points.add (pointer);
 			foreach (BubbleOther b in bubbles) {
 				b.new_position.connect (_on_bubble_position_at_freeze);
 			}
@@ -102,15 +101,14 @@ public class Bubbles.Board {
 	}
 
 	public void _on_bubble_position_at_freeze (BubbleOther b) {
-		foreach (Clutter.Knot knot in frozen_points) {
-			if ((Math.fabs (b.x - knot.x) <= Bubble.RADIUS*2) &&
-				(Math.fabs (b.y - knot.y) <= Bubble.RADIUS*2)) {
+		foreach (Bubble frozen in frozen_points) {
+			if ((Math.fabs (b.x - frozen.x) <= Bubble.RADIUS*2) &&
+				(Math.fabs (b.y - frozen.y) <= Bubble.RADIUS*2)) {
 				/* the center of the bubbles are close enough to collide */
 				b.stop ();
 				b.expand ();
 				bubbles.remove (b);
-				Clutter.Knot coords = { (int)b.x, (int)b.y };
-				frozen_points.add (coords);
+				frozen_points.add (b);
 				break;
 			}
 		}
@@ -125,14 +123,7 @@ public class Bubbles.Board {
 	public void _on_bubble_fadeout (Bubble b) {
 		b.fadeout ();
 		var removed = false;
-		foreach (Clutter.Knot? k in frozen_points) {
-			if (k.x == b.x || k.y == b.y) {
-				frozen_points.remove (k);
-				removed = true;
-				break;
-			}
-		}
-		assert (removed == true);
+		frozen_points.remove (b);
 	}
 
 	private void calculate_path (BubbleOther b) {
