@@ -37,7 +37,7 @@ public class Bubbles.BubbleOther : Bubble {
 		behaviour = new Clutter.BehaviourPath (alpha, path);
 		behaviour.apply (this);
 
-		this.set_scale_with_gravity (SCALE_FACTOR, SCALE_FACTOR, Clutter.Gravity.CENTER);
+		this.set_scale (SCALE_FACTOR, SCALE_FACTOR);
 	}
 
 	private void _on_new_frame (Clutter.Timeline time, int msecs) {
