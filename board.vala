@@ -37,6 +37,7 @@ public class Bubbles.Board {
 		vbox = builder.get_object ("vbox1") as Gtk.VBox;
 
 		embed = new GtkClutter.Embed ();
+		embed.set_size_request (640, 480);
 		stage = embed.get_stage () as Clutter.Stage;
 
 		vbox.pack_start (embed, true, true);
@@ -174,7 +175,7 @@ public class Bubbles.Board {
 			if (y + opposite > h) {
 				/* bottom hit */
 				horizontal_hit = true;
-				opposite = Math.tan (Math.PI*1.5 - angle) * (h - x);
+				opposite = Math.tan (Math.PI*1.5 - angle) * (h - y);
 				dx = x - opposite;
 				dy = h - (radius * bs);
 			} else {
@@ -187,7 +188,7 @@ public class Bubbles.Board {
 			opposite = Math.tan (angle - Math.PI*1.5) * (h - y);
 			if (x + opposite > w) {
 				/* right hit */
-				opposite = Math.tan (Math.PI*2 - angle) * (h - x);
+				opposite = Math.tan (Math.PI*2 - angle) * (w - x);
 				dx = w - (radius * bs);
 				dy = y + opposite;
 			} else {
@@ -206,9 +207,12 @@ public class Bubbles.Board {
 		}
 
 		b.angle = angle;
-		//FIXME : why does the distance go negative sometimes ?
-		// assert (dx >= 0 && dx <= w);
-		// assert (dy >= 0 && dy <= h);
+
+		/* debug ("Next point is %i, %i", (int)dx, (int)dy);
+		   assert (dx >= 0);
+		   assert (dx <= w);
+		   assert (dy >= 0);
+		   assert (dy <= h); */
 		b.path.add_move_to ((int)b.x, (int)b.y);
 		b.path.add_line_to ((int)dx, (int)dy);
 	}
