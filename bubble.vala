@@ -3,7 +3,7 @@ public abstract class Bubble : Clutter.CairoTexture {
 
 	/* TODO : implement fadout */
 	public static const short RADIUS = 30;
-	private static const short EXPAND_TIME = 1000;
+	private static const short EXPAND_TIME = 200;
 	private static const short OPACITY = 200;
 	private static const uint FADOUT_TIME = 2000;
 
@@ -42,11 +42,13 @@ public abstract class Bubble : Clutter.CairoTexture {
 	}
 		
 	public void expand () {
+		behaviour_scale.set_bounds (this.scale_x, this.scale_y, 1, 1);
 		timescale.start ();
 		fadeout_time.start ();
 	}
 
 	public void fadeout () {
+		behaviour_scale.set_bounds (0, 0, 1, 1);
 		timescale.direction = Clutter.TimelineDirection.BACKWARD;
 		timescale.start ();
 	}
