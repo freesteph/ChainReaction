@@ -5,11 +5,14 @@ using GtkClutter;
 /* TODO : implement announce ("get 2 of 10 bubbles") */
 public class Bubbles.Board {
 
-	/* widget */
+	/* widgets */
 	private Gtk.Window window;
 	private Gtk.VBox vbox;
 	private GtkClutter.Embed embed;
 	private Gtk.Builder builder;
+
+	private Gtk.Dialog go_dialog;
+	private Gtk.Label go_label;
 
 	/* actors */
 	private Clutter.Stage stage;
@@ -20,7 +23,7 @@ public class Bubbles.Board {
 	private Gee.ArrayList<BubbleOther> bubbles;
 	private Gee.ArrayList<Bubble> frozen_bubbles;
 	private CursorBubble pointer;
-
+	private int counter;
 	// linked list ? FIXME
 
 	public Board (uint pop) {
@@ -38,20 +41,35 @@ public class Bubbles.Board {
 
 		embed = new GtkClutter.Embed ();
 		embed.set_size_request (640, 480);
-		stage = embed.get_stage () as Clutter.Stage;
-
 		vbox.pack_start (embed, true, true);
+
+		stage = embed.get_stage () as Clutter.Stage;
+		stage.color = { 50, 50, 50, 255 };
+
+		builder = new Gtk.Builder ();
+		try {
+			builder.add_from_file ("game-over.ui");
+		} catch (Error e) {
+			error ("Unable to load game-over dialog : %s", e.message);
+		}
+
+		go_dialog = builder.get_object ("dialog1") as Gtk.Dialog;
+		go_label = builder.get_object ("main_label") as Gtk.Label;
 	}
 
 	public void run () {
 		assert (window != null);
 
+		/* re-init data */
+		freeze = false;
+		counter = 0;
 		bubbles = new Gee.ArrayList <BubbleOther> ();
 		uint8 red, green, blue;
 		int x,y;
 		BubbleOther b;
 
-		while (population > 0) {
+		int i = 0;
+		while (i < population) {
 			red = (uint8)Random.int_range (0, 255);
 			green = (uint8)Random.int_range (0, 255);
 			blue = (uint8)Random.int_range (0, 255);
@@ -67,12 +85,11 @@ public class Bubbles.Board {
 			b.path_complete.connect (_on_bubble_path_complete);
 			b.end_expansion.connect (_on_bubble_fadeout);
 			b.move ();
-
-			population--;
+			i++;
 		}
 
 		frozen_bubbles = new Gee.ArrayList<Bubble> ();
-		pointer = new CursorBubble ({ 0, 0, 0, 255 });
+		pointer = new CursorBubble ({ 255, 255, 255, 200 });
 		pointer.end_expansion.connect (_on_bubble_fadeout);
 		this.stage.add_actor (pointer);
 
@@ -110,6 +127,7 @@ public class Bubbles.Board {
 				b.expand ();
 				bubbles.remove (b);
 				frozen_bubbles.add (b);
+				counter++;
 				break;
 			}
 		}
@@ -124,6 +142,13 @@ public class Bubbles.Board {
 	public void _on_bubble_fadeout (Bubble b) {
 		b.fadeout ();
 		frozen_bubbles.remove (b);
+		if (frozen_bubbles.size == 0) {
+			foreach (BubbleOther bl in bubbles) {
+				stage.remove_actor (bl);
+			}
+			_on_game_over ();
+
+		}
 	}
 
 	private void calculate_path (BubbleOther b) {
@@ -214,5 +239,20 @@ public class Bubbles.Board {
 		   assert (dy <= h); */
 		b.path.add_move_to ((int)b.x, (int)b.y);
 		b.path.add_line_to ((int)dx, (int)dy);
+	}
+
+	public void _on_game_over () {
+		var score = @"<b>Game over</b>\nYou caused a chain reaction of <b>$(counter)/$(population)</b>";
+		go_label.set_markup (score);
+		var response = go_dialog.run ();
+		if (response == 0) {
+			/* retry */
+			debug ("Retry!");
+			go_dialog.hide ();
+			this.run ();
+		} else {
+			debug ("Goodbye!");
+			Gtk.main_quit ();
+		}
 	}
 }

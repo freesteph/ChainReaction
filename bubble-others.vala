@@ -28,7 +28,6 @@ public class Bubbles.BubbleOther : Bubble {
 				 (angle > Math.PI*2 - 0.10));
 
 		path = new Clutter.Path ();
-
 		timeline = new Clutter.Timeline (10);
 		timeline.completed.connect (_on_timeline_complete);
 		timeline.new_frame.connect (_on_new_frame);

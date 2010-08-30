@@ -5,7 +5,7 @@ public abstract class Bubble : Clutter.CairoTexture {
 	public static const short RADIUS = 30;
 	private static const short EXPAND_TIME = 200;
 	private static const short OPACITY = 200;
-	private static const uint FADOUT_TIME = 2000;
+	private static const uint FADOUT_TIME = 2500;
 
 	private Cairo.Context cr;
 
@@ -29,7 +29,7 @@ public abstract class Bubble : Clutter.CairoTexture {
 		cr = null;
 
 		timescale = new Clutter.Timeline (EXPAND_TIME);
-		alphascale = new Clutter.Alpha.full (timescale, Clutter.AnimationMode.LINEAR);
+		alphascale = new Clutter.Alpha.full (timescale, Clutter.AnimationMode.EASE_OUT_BACK);
 		behaviour_scale = new Clutter.BehaviourScale (alphascale, 0, 0, 1, 1);
 		behaviour_scale.apply (this);
 
