@@ -3,9 +3,9 @@ public abstract class Bubble : Clutter.CairoTexture {
 
 	/* TODO : implement fadout */
 	public static const short RADIUS = 30;
-	private static const short EXPAND_TIME = 400;
+	private static const short EXPAND_TIME = 1000;
 	private static const short OPACITY = 200;
-	private static const uint FADOUT_TIME = 1000;
+	private static const uint FADOUT_TIME = 2000;
 
 	private Cairo.Context cr;
 
