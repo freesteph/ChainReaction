@@ -131,8 +131,7 @@ public class Bubbles.Board {
 		double opposite;
 		/* REVIEW : here I store a lot of properties into local variables
 		   to avoid some implicit function calls */
-		double radius = Bubble.RADIUS;
-		double bs = b.scale_x;
+		double radius = Bubble.RADIUS * b.scale_x;
 		double x = b.x;
 		double y = b.y;
 		double w = this.stage.width;
@@ -149,10 +148,10 @@ public class Bubbles.Board {
 				horizontal_hit = true;
 				opposite = Math.tan (Math.PI/2 - angle) * y;
 				dx = x + opposite;
-				dy = 0 + (radius * bs);
+				dy = 0 + radius;
 			} else {
 				/* we're hitting the right edge */
-				dx = w - (radius * bs);
+				dx = w - radius;
 				dy = y - opposite;
 			}
 		} else if (angle < Math.PI) {
@@ -161,12 +160,12 @@ public class Bubbles.Board {
 			if (x - opposite < 0) {
 				/* left hit */
 				opposite = Math.tan (Math.PI - angle) * x;
-				dx = 0 + (radius * bs);
+				dx = 0 + radius;
 				dy = y - opposite;
 			} else {
 				/* top hit */
 				horizontal_hit = true;
-				dy = 0 + (radius * bs);
+				dy = 0 + radius;
 				dx = x - opposite;
 			}
 		} else if (angle < Math.PI*1.5) {
@@ -177,10 +176,10 @@ public class Bubbles.Board {
 				horizontal_hit = true;
 				opposite = Math.tan (Math.PI*1.5 - angle) * (h - y);
 				dx = x - opposite;
-				dy = h - (radius * bs);
+				dy = h - radius;
 			} else {
 				/* left hit */
-				dx = 0 + (radius * bs);
+				dx = 0 + radius;
 				dy = y + opposite;
 			}
 		} else {
@@ -189,13 +188,13 @@ public class Bubbles.Board {
 			if (x + opposite > w) {
 				/* right hit */
 				opposite = Math.tan (Math.PI*2 - angle) * (w - x);
-				dx = w - (radius * bs);
+				dx = w - radius;
 				dy = y + opposite;
 			} else {
 				/* bottom hit */
 				horizontal_hit = true;
 				dx = x + opposite;
-				dy = h - (radius * bs);
+				dy = h - radius;
 			}
 		}
 
