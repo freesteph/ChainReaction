@@ -103,8 +103,8 @@ public class Bubbles.Board {
 
 	public void _on_bubble_position_at_freeze (BubbleOther b) {
 		foreach (Bubble frozen in frozen_bubbles) {
-			if ((Math.fabs (b.x - frozen.x) <= Bubble.RADIUS*2) &&
-				(Math.fabs (b.y - frozen.y) <= Bubble.RADIUS*2)) {
+			if ((Math.fabs (b.x - frozen.x) <= Bubble.RADIUS * (b.scale_x + frozen.scale_x)) &&
+				(Math.fabs (b.y - frozen.y) <= Bubble.RADIUS * (b.scale_y + frozen.scale_y))) {
 				/* the center of the bubbles are close enough to collide */
 				b.stop ();
 				b.expand ();
