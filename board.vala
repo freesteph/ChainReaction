@@ -116,8 +116,8 @@ public class Bubbles.Board {
 			bubbles.add (b);
 			this.stage.add_actor (b);
 			//FIXME : constant
-			x = Random.int_range (0, (int)stage.width - 30);
-			y = Random.int_range (0, (int)stage.height - 30);
+			x = Random.int_range (0, (int)stage.width - Bubble.RADIUS);
+			y = Random.int_range (0, (int)stage.height - Bubble.RADIUS);
 			b.set_position ((int)x, (int)y);
 			calculate_path (b);
 			b.path_complete.connect (_on_bubble_path_complete);
