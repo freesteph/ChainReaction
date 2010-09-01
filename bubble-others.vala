@@ -2,6 +2,7 @@ public class Bubbles.BubbleOther : Bubble {
 
 	private static const double SCALE_FACTOR = 0.4;
 	private static const uint SPEED = 10;
+	private static const double ANGLE_OFFSET = 0.10;
 
 	//FIXME : public = bad
 	public double angle;
@@ -20,12 +21,11 @@ public class Bubbles.BubbleOther : Bubble {
 		do {
 			angle = Random.double_range (0, 2*Math.PI);
 			/* We random it again if it's too close to right angles */
-			//FIXME : constant
-		} while ((angle < Math.PI/2 + 0.10 && angle > Math.PI/2 - 0.10) ||
-				 (angle < Math.PI + 0.10 && angle > Math.PI - 0.10) ||
-				 (angle < Math.PI*1.5 + 0.10 && angle > Math.PI*1.5 - 0.10) ||
-				 (angle < 0.10) ||
-				 (angle > Math.PI*2 - 0.10));
+		} while ((angle < Math.PI/2 + ANGLE_OFFSET && angle > Math.PI/2 - ANGLE_OFFSET) ||
+				 (angle < Math.PI + ANGLE_OFFSET && angle > Math.PI - ANGLE_OFFSET) ||
+				 (angle < Math.PI*1.5 + ANGLE_OFFSET && angle > Math.PI*1.5 - ANGLE_OFFSET) ||
+				 (angle < ANGLE_OFFSET) ||
+				 (angle > Math.PI*2 - ANGLE_OFFSET));
 
 		path = new Clutter.Path ();
 		timeline = new Clutter.Timeline (10);
