@@ -13,17 +13,24 @@ public class Bubbles.Board {
 
 	private Gtk.Dialog go_dialog;
 	private Gtk.Label go_label;
-
+	private Gtk.TreeIter iter;
 	/* actors */
 	private Clutter.Stage stage;
 
 	/* data */
+	private Gtk.ListStore scores;
+	private Gtk.TreeView scores_tree;
+	private Gtk.TreeViewColumn score_name;
+	private Gtk.TreeViewColumn score_date;
+	private Gtk.TreeViewColumn score_score;
+
 	public static bool freeze = false;
 	private uint population;
 	private Gee.ArrayList<BubbleOther> bubbles;
 	private Gee.ArrayList<Bubble> frozen_bubbles;
 	private CursorBubble pointer;
 	private int counter;
+	private string score;
 	// linked list ? FIXME
 
 	public Board (uint pop) {
@@ -55,15 +62,46 @@ public class Bubbles.Board {
 
 		go_dialog = builder.get_object ("dialog1") as Gtk.Dialog;
 		go_label = builder.get_object ("main_label") as Gtk.Label;
+		scores = builder.get_object ("highscores") as Gtk.ListStore;
+		scores_tree = builder.get_object ("scoretree") as Gtk.TreeView;
+
+		score_name = new Gtk.TreeViewColumn.with_attributes ("Name",
+															 new Gtk.CellRendererText (),
+															 "text", 0,
+															 null);
+		score_date = new Gtk.TreeViewColumn.with_attributes ("Date",
+															new Gtk.CellRendererText (),
+															"text", 1,
+															null);
+		score_score = new Gtk.TreeViewColumn.with_attributes ("Score",
+															 new Gtk.CellRendererText (),
+															 "text", 2,
+															 null);
+		scores_tree.append_column (score_name);
+		scores_tree.append_column (score_date);
+		scores_tree.append_column (score_score);
+		bubbles = new Gee.ArrayList <BubbleOther> ();
+		frozen_bubbles = new Gee.ArrayList<Bubble> ();
+		pointer = new CursorBubble ({ 255, 255, 255, 200 });
+
+		this.stage.add_actor (pointer);
+
+		/* events */
+		this.stage.motion_event.connect (_on_motion_event);
+		this.stage.button_press_event.connect (_on_button_press_event);
+		pointer.end_expansion.connect (_on_bubble_fadeout);
 	}
 
 	public void run () {
 		assert (window != null);
 
-		/* re-init data */
+		/* (re)init data */
 		freeze = false;
 		counter = 0;
-		bubbles = new Gee.ArrayList <BubbleOther> ();
+		bubbles.clear ();
+		frozen_bubbles.clear ();
+		pointer.reset ();
+
 		uint8 red, green, blue;
 		int x,y;
 		BubbleOther b;
@@ -88,14 +126,6 @@ public class Bubbles.Board {
 			i++;
 		}
 
-		frozen_bubbles = new Gee.ArrayList<Bubble> ();
-		pointer = new CursorBubble ({ 255, 255, 255, 200 });
-		pointer.end_expansion.connect (_on_bubble_fadeout);
-		this.stage.add_actor (pointer);
-
-		/* events */
-		this.stage.motion_event.connect (_on_motion_event);
-		this.stage.button_press_event.connect (_on_button_press_event);
 		window.show_all ();
 	}
 
@@ -146,8 +176,8 @@ public class Bubbles.Board {
 			foreach (BubbleOther bl in bubbles) {
 				stage.remove_actor (bl);
 			}
+			bubbles.clear ();
 			_on_game_over ();
-
 		}
 	}
 
@@ -242,17 +272,28 @@ public class Bubbles.Board {
 	}
 
 	public void _on_game_over () {
-		var score = @"<b>Game over</b>\nYou caused a chain reaction of <b>$(counter)/$(population)</b>";
+		scores.append (out iter);
+		scores.set (iter,
+					0, "Johnny",
+					1, "tarace",
+					2, 1000,
+					-1);
+ 		score = @"<b>Game over</b>\nYou caused a chain reaction of <b>$(counter)/$(population)</b>";
 		go_label.set_markup (score);
 		var response = go_dialog.run ();
-		if (response == 0) {
+		switch (response) {
+		case 0:
 			/* retry */
 			debug ("Retry!");
 			go_dialog.hide ();
 			this.run ();
-		} else {
+			break;
+		case 1:
+			/* quit */
+		default:
 			debug ("Goodbye!");
 			Gtk.main_quit ();
+			break;
 		}
 	}
 }

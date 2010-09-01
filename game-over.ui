@@ -7,9 +7,9 @@
       <!-- column-name name -->
       <column type="gchararray"/>
       <!-- column-name date -->
-      <column type="guint"/>
-      <!-- column-name scores -->
       <column type="gchararray"/>
+      <!-- column-name scores -->
+      <column type="guint"/>
     </columns>
   </object>
   <object class="GtkDialog" id="dialog1">
@@ -30,11 +30,13 @@
             <property name="justify">center</property>
           </object>
           <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
             <property name="position">1</property>
           </packing>
         </child>
         <child>
-          <object class="GtkTreeView" id="treeview1">
+          <object class="GtkTreeView" id="scoretree">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="model">highscores</property>
@@ -86,7 +88,7 @@
       </object>
     </child>
     <action-widgets>
-      <action-widget response="0">quit</action-widget>
+      <action-widget response="1">quit</action-widget>
       <action-widget response="0">retry</action-widget>
     </action-widgets>
   </object>
