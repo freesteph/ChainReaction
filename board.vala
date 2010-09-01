@@ -194,7 +194,6 @@ public class Bubbles.Board {
 		double angle = b.angle;
 		bool horizontal_hit = false;
 
-		// FIXME : correct offset bouncing.
 		if (angle < Math.PI/2) {
 			/* We're going up-right */
 			opposite = Math.tan (angle) * (w - x);
