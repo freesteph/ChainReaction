@@ -171,14 +171,17 @@ public class Bubbles.Board {
 
 	public void _on_bubble_fadeout (Bubble b) {
 		b.fadeout ();
-		frozen_bubbles.remove (b);
-		if (frozen_bubbles.size == 0) {
-			foreach (BubbleOther bl in bubbles) {
-				stage.remove_actor (bl);
-			}
-			bubbles.clear ();
-			_on_game_over ();
-		}
+		b.end_fadeout.connect ( (bub) =>
+			{
+				frozen_bubbles.remove (bub);
+				if (frozen_bubbles.size == 0) {
+					foreach (BubbleOther bl in bubbles) {
+						stage.remove_actor (bl);
+					}
+					bubbles.clear ();
+					_on_game_over ();
+				}
+			});
 	}
 
 	private void calculate_path (BubbleOther b) {

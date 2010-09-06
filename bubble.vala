@@ -15,6 +15,7 @@ public abstract class Bubble : Clutter.CairoTexture {
 	private Clutter.Timeline fadeout_time;
 
 	public signal void end_expansion (Bubble b);
+	public signal void end_fadeout (Bubble b);
 
 	public Bubble (Clutter.Color color) {
 		this.set_anchor_point_from_gravity (Clutter.Gravity.CENTER);
@@ -51,6 +52,10 @@ public abstract class Bubble : Clutter.CairoTexture {
 		behaviour_scale.set_bounds (0, 0, 1, 1);
 		timescale.direction = Clutter.TimelineDirection.BACKWARD;
 		timescale.start ();
+		timescale.completed.connect ( () =>
+			{
+				end_fadeout (this);
+			});
 	}
 
 	public void reset () {
