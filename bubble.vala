@@ -11,7 +11,7 @@ public abstract class Bubble : Clutter.CairoTexture {
 
 	private Clutter.BehaviourScale behaviour_scale;
 	private Clutter.Alpha alphascale;
-	private Clutter.Timeline timescale;
+	private Clutter.Timeline scale_time;
 	private Clutter.Timeline idle_time;
 
 	public signal void end_expansion (Bubble b);
@@ -29,8 +29,8 @@ public abstract class Bubble : Clutter.CairoTexture {
 		cr.fill ();
 		cr = null;
 
-		timescale = new Clutter.Timeline (EXPAND_TIME);
-		alphascale = new Clutter.Alpha.full (timescale, Clutter.AnimationMode.EASE_OUT_BACK);
+		scale_time = new Clutter.Timeline (EXPAND_TIME);
+		alphascale = new Clutter.Alpha.full (scale_time, Clutter.AnimationMode.EASE_OUT_BACK);
 		behaviour_scale = new Clutter.BehaviourScale (alphascale, 0, 0, 1, 1);
 		behaviour_scale.apply (this);
 
@@ -44,8 +44,8 @@ public abstract class Bubble : Clutter.CairoTexture {
 		
 	public void expand () {
 		behaviour_scale.set_bounds (this.scale_x, this.scale_y, 1, 1);
-		timescale.start ();
-		timescale.completed.connect ( () =>
+		scale_time.start ();
+		scale_time.completed.connect ( () =>
 			{
 				end_expansion (this);
 				idle_time.start ();
@@ -55,9 +55,9 @@ public abstract class Bubble : Clutter.CairoTexture {
 
 	public void fadeout () {
 		behaviour_scale.set_bounds (0, 0, 1, 1);
-		timescale.direction = Clutter.TimelineDirection.BACKWARD;
-		timescale.start ();
-		timescale.completed.connect ( () =>
+		scale_time.direction = Clutter.TimelineDirection.BACKWARD;
+		scale_time.start ();
+		scale_time.completed.connect ( () =>
 			{
 				end_fadeout (this);
 			});
@@ -65,6 +65,6 @@ public abstract class Bubble : Clutter.CairoTexture {
 
 	public void reset () {
 		this.set_scale (1, 1);
-		timescale.stop ();
+		scale_time.stop ();
 	}
 }
