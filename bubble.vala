@@ -5,14 +5,14 @@ public abstract class Bubble : Clutter.CairoTexture {
 	public static const short RADIUS = 30;
 	private static const short EXPAND_TIME = 300;
 	private static const short OPACITY = 200;
-	private static const short FADOUT_TIME = 2500;
+	private static const short IDLE_TIME = 2500;
 
 	private Cairo.Context cr;
 
 	private Clutter.BehaviourScale behaviour_scale;
 	private Clutter.Alpha alphascale;
 	private Clutter.Timeline timescale;
-	private Clutter.Timeline fadeout_time;
+	private Clutter.Timeline idle_time;
 
 	public signal void end_expansion (Bubble b);
 	public signal void end_fadeout (Bubble b);
@@ -34,10 +34,10 @@ public abstract class Bubble : Clutter.CairoTexture {
 		behaviour_scale = new Clutter.BehaviourScale (alphascale, 0, 0, 1, 1);
 		behaviour_scale.apply (this);
 
-		fadeout_time = new Clutter.Timeline (FADOUT_TIME);
-		fadeout_time.completed.connect ( () =>
+		idle_time = new Clutter.Timeline (IDLE_TIME);
+		idle_time.completed.connect ( () =>
 			{
-				end_expansion (this);
+				fadeout ();
 			});
 
 	}
@@ -45,7 +45,12 @@ public abstract class Bubble : Clutter.CairoTexture {
 	public void expand () {
 		behaviour_scale.set_bounds (this.scale_x, this.scale_y, 1, 1);
 		timescale.start ();
-		fadeout_time.start ();
+		timescale.completed.connect ( () =>
+			{
+				end_expansion (this);
+				idle_time.start ();
+			});
+		// FIXME : I don't like lamba methods all over
 	}
 
 	public void fadeout () {

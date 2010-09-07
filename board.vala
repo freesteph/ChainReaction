@@ -89,7 +89,6 @@ public class Bubbles.Board {
 		/* events */
 		this.stage.motion_event.connect (_on_motion_event);
 		this.stage.button_press_event.connect (_on_button_press_event);
-		pointer.end_expansion.connect (_on_bubble_fadeout);
 	}
 
 	public void run () {
@@ -120,8 +119,10 @@ public class Bubbles.Board {
 			y = Random.int_range (0, (int)stage.height - Bubble.RADIUS);
 			b.set_position ((int)x, (int)y);
 			calculate_path (b);
+
 			b.path_complete.connect (_on_bubble_path_complete);
-			b.end_expansion.connect (_on_bubble_fadeout);
+			b.end_expansion.connect (_on_bubble_end_expansion);
+			b.end_fadeout.connect (_on_bubble_end_fadeout);
 			b.move ();
 			i++;
 		}
@@ -139,11 +140,11 @@ public class Bubbles.Board {
 	public bool _on_button_press_event (Clutter.ButtonEvent event) {
 		if (!freeze) {
 			freeze = true;
-			frozen_bubbles.add (pointer);
 			foreach (BubbleOther b in bubbles) {
 				b.new_position.connect (_on_bubble_position_at_freeze);
 			}
 			this.pointer.expand ();
+			frozen_bubbles.add (pointer);
 		}
 		return true;
 	}
@@ -155,11 +156,25 @@ public class Bubbles.Board {
 				/* the center of the bubbles are close enough to collide */
 				b.stop ();
 				b.expand ();
-				bubbles.remove (b);
-				frozen_bubbles.add (b);
-				counter++;
-				break;
 			}
+		}
+	}
+
+	public void _on_bubble_end_expansion (Bubble b) {
+		// FIXME : fails =>	assert (bubbles.contains ((BubbleOther)b));
+		b.end_expansion.disconnect (_on_bubble_end_expansion);
+		bubbles.remove ((BubbleOther)b);
+		frozen_bubbles.add (b);
+		counter++;
+	}
+
+	public void _on_bubble_end_fadeout (Bubble b) {
+		frozen_bubbles.remove (b);
+		b.end_fadeout.disconnect (_on_bubble_end_fadeout);
+		//stage.remove_actor (b);
+		if (frozen_bubbles.size == 0) {
+			bubbles.clear ();
+			_on_game_over ();
 		}
 	}
 
@@ -167,21 +182,6 @@ public class Bubbles.Board {
 		b.path.clear ();
 		calculate_path (b);
 		b.move ();
-	}
-
-	public void _on_bubble_fadeout (Bubble b) {
-		b.fadeout ();
-		b.end_fadeout.connect ( (bub) =>
-			{
-				frozen_bubbles.remove (bub);
-				if (frozen_bubbles.size == 0) {
-					foreach (BubbleOther bl in bubbles) {
-						stage.remove_actor (bl);
-					}
-					bubbles.clear ();
-					_on_game_over ();
-				}
-			});
 	}
 
 	private void calculate_path (BubbleOther b) {
