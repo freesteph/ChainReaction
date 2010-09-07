@@ -1,0 +1,8 @@
+== Chain Reaction ==
+Copy of the ChainReaction Chrome Experiment which can be found at {url}, with Clutter and GTK+.
+
+Dependencies : 
+- clutter-gtk-0.10
+- gee-1.0
+
+Use make to compile.
