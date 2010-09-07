@@ -94,13 +94,6 @@ public class Bubbles.Board {
 	public void run () {
 		assert (window != null);
 
-		/* (re)init data */
-		freeze = false;
-		counter = 0;
-		bubbles.clear ();
-		frozen_bubbles.clear ();
-		pointer.reset ();
-
 		uint8 red, green, blue;
 		int x,y;
 		BubbleOther b;
@@ -280,6 +273,7 @@ public class Bubbles.Board {
 			/* retry */
 			debug ("Retry!");
 			go_dialog.hide ();
+			this.reset ();
 			this.run ();
 			break;
 		case 1:
@@ -289,5 +283,13 @@ public class Bubbles.Board {
 			Gtk.main_quit ();
 			break;
 		}
+	}
+
+	public void reset () {
+		freeze = false;
+		counter = 0;
+		bubbles.clear ();
+		frozen_bubbles.clear ();
+		pointer.reset ();
 	}
 }
