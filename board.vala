@@ -121,7 +121,6 @@ public class Bubbles.Board {
 			calculate_path (b);
 
 			b.path_complete.connect (_on_bubble_path_complete);
-			b.end_expansion.connect (_on_bubble_end_expansion);
 			b.end_fadeout.connect (_on_bubble_end_fadeout);
 			b.move ();
 			i++;
@@ -156,16 +155,11 @@ public class Bubbles.Board {
 				/* the center of the bubbles are close enough to collide */
 				b.stop ();
 				b.expand ();
+				bubbles.remove (b);
+				frozen_bubbles.add (b);
+				break;
 			}
 		}
-	}
-
-	public void _on_bubble_end_expansion (Bubble b) {
-		// FIXME : fails =>	assert (bubbles.contains ((BubbleOther)b));
-		b.end_expansion.disconnect (_on_bubble_end_expansion);
-		bubbles.remove ((BubbleOther)b);
-		frozen_bubbles.add (b);
-		counter++;
 	}
 
 	public void _on_bubble_end_fadeout (Bubble b) {
