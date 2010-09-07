@@ -26,7 +26,7 @@ public class Bubbles.Board {
 
 	public static bool freeze = false;
 	private uint population;
-	private Gee.ArrayList<BubbleOther> bubbles;
+	private Gee.ArrayList<BubbleOther> moving_bubbles;
 	private Gee.ArrayList<Bubble> frozen_bubbles;
 	private CursorBubble pointer;
 	private int counter;
@@ -80,7 +80,7 @@ public class Bubbles.Board {
 		scores_tree.append_column (score_name);
 		scores_tree.append_column (score_date);
 		scores_tree.append_column (score_score);
-		bubbles = new Gee.ArrayList <BubbleOther> ();
+		moving_bubbles = new Gee.ArrayList <BubbleOther> ();
 		frozen_bubbles = new Gee.ArrayList<Bubble> ();
 		pointer = new CursorBubble ({ 255, 255, 255, 200 });
 
@@ -106,7 +106,7 @@ public class Bubbles.Board {
 			blue = (uint8)Random.int_range (0, 255);
 			b = new BubbleOther ({ red, green, blue, 255 });
 
-			bubbles.add (b);
+			moving_bubbles.add (b);
 			this.stage.add_actor (b);
 			//FIXME : constant
 			x = Random.int_range (0, (int)stage.width - Bubble.RADIUS);
@@ -133,7 +133,7 @@ public class Bubbles.Board {
 	public bool _on_button_press_event (Clutter.ButtonEvent event) {
 		if (!freeze) {
 			freeze = true;
-			foreach (BubbleOther b in bubbles) {
+			foreach (BubbleOther b in moving_bubbles) {
 				b.new_position.connect (_on_bubble_position_at_freeze);
 			}
 			this.pointer.expand ();
@@ -149,8 +149,8 @@ public class Bubbles.Board {
 				/* the center of the bubbles are close enough to collide */
 				b.stop ();
 				b.expand ();
-				assert (bubbles.contains (b));
-				bubbles.remove (b);
+				assert (moving_bubbles.contains (b));
+				moving_bubbles.remove (b);
 				frozen_bubbles.add (b);
 				counter++;
 				break;
@@ -162,7 +162,7 @@ public class Bubbles.Board {
 		assert (frozen_bubbles.contains (b) == true);
 		frozen_bubbles.remove (b);
 		if (frozen_bubbles.size == 0) {
-			bubbles.clear ();
+			moving_bubbles.clear ();
 			_on_game_over ();
 		}
 	}
@@ -292,7 +292,7 @@ public class Bubbles.Board {
 	public void reset () {
 		freeze = false;
 		counter = 0;
-		bubbles.clear ();
+		moving_bubbles.clear ();
 		frozen_bubbles.clear ();
 		pointer.reset ();
 	}
