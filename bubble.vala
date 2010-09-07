@@ -14,7 +14,6 @@ public abstract class Bubble : Clutter.CairoTexture {
 	private Clutter.Timeline scale_time;
 	private Clutter.Timeline idle_time;
 
-	public signal void end_expansion (Bubble b);
 	public signal void end_fadeout (Bubble b);
 
 	public Bubble (Clutter.Color color) {
@@ -47,7 +46,6 @@ public abstract class Bubble : Clutter.CairoTexture {
 		scale_time.start ();
 		scale_time.completed.connect ( () =>
 			{
-				end_expansion (this);
 				idle_time.start ();
 			});
 		// FIXME : I don't like lamba methods all over

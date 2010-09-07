@@ -164,8 +164,6 @@ public class Bubbles.Board {
 
 	public void _on_bubble_end_fadeout (Bubble b) {
 		frozen_bubbles.remove (b);
-		b.end_fadeout.disconnect (_on_bubble_end_fadeout);
-		//stage.remove_actor (b);
 		if (frozen_bubbles.size == 0) {
 			bubbles.clear ();
 			_on_game_over ();
