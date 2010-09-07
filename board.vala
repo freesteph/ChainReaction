@@ -89,6 +89,7 @@ public class Bubbles.Board {
 		/* events */
 		this.stage.motion_event.connect (_on_motion_event);
 		this.stage.button_press_event.connect (_on_button_press_event);
+		this.pointer.end_fadeout.connect (_on_bubble_end_fadeout);
 	}
 
 	public void run () {
@@ -148,14 +149,17 @@ public class Bubbles.Board {
 				/* the center of the bubbles are close enough to collide */
 				b.stop ();
 				b.expand ();
+				assert (bubbles.contains (b));
 				bubbles.remove (b);
 				frozen_bubbles.add (b);
+				counter++;
 				break;
 			}
 		}
 	}
 
 	public void _on_bubble_end_fadeout (Bubble b) {
+		assert (frozen_bubbles.contains (b) == true);
 		frozen_bubbles.remove (b);
 		if (frozen_bubbles.size == 0) {
 			bubbles.clear ();

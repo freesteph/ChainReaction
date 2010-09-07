@@ -14,6 +14,8 @@ public abstract class Bubble : Clutter.CairoTexture {
 	private Clutter.Timeline scale_time;
 	private Clutter.Timeline idle_time;
 
+	private ulong signal_handler;
+
 	public signal void end_fadeout (Bubble b);
 
 	public Bubble (Clutter.Color color) {
@@ -44,7 +46,7 @@ public abstract class Bubble : Clutter.CairoTexture {
 	public void expand () {
 		behaviour_scale.set_bounds (this.scale_x, this.scale_y, 1, 1);
 		scale_time.start ();
-		scale_time.completed.connect ( () =>
+		signal_handler = scale_time.completed.connect ( () =>
 			{
 				idle_time.start ();
 			});
@@ -55,6 +57,7 @@ public abstract class Bubble : Clutter.CairoTexture {
 		behaviour_scale.set_bounds (0, 0, 1, 1);
 		scale_time.direction = Clutter.TimelineDirection.BACKWARD;
 		scale_time.start ();
+		scale_time.disconnect (signal_handler);
 		scale_time.completed.connect ( () =>
 			{
 				end_fadeout (this);
