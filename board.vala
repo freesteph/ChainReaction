@@ -139,7 +139,6 @@ public class Bubbles.Board {
 	public bool _on_button_press_event (Clutter.ButtonEvent event) {
 		if (!freeze) {
 			freeze = true;
-			counter = 0;
 			pointer.expand ();
 			frozen_bubbles.add (pointer);
 			foreach (BubbleOther b in moving_bubbles) {
