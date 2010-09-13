@@ -23,6 +23,7 @@ public class Bubbles.Board {
 	private Gtk.TreeViewColumn score_name;
 	private Gtk.TreeViewColumn score_date;
 	private Gtk.TreeViewColumn score_score;
+	private string username;
 
 	public static bool freeze = false;
 	private uint population;
@@ -80,9 +81,12 @@ public class Bubbles.Board {
 		scores_tree.append_column (score_name);
 		scores_tree.append_column (score_date);
 		scores_tree.append_column (score_score);
+
+		username = Environment.get_real_name ();
+
 		moving_bubbles = new Gee.ArrayList <BubbleOther> ();
 		frozen_bubbles = new Gee.ArrayList<Bubble> ();
-		pointer = new CursorBubble ({ 255, 255, 255, 200 });
+		pointer = new CursorBubble ();
 
 		this.stage.add_actor (pointer);
 
@@ -143,13 +147,13 @@ public class Bubbles.Board {
 	}
 
 	public void _on_bubble_position_at_freeze (BubbleOther b) {
+		assert (frozen_bubbles.size > 0);
 		foreach (Bubble frozen in frozen_bubbles) {
 			if ((Math.fabs (b.x - frozen.x) <= Bubble.RADIUS * (b.scale_x + frozen.scale_x)) &&
 				(Math.fabs (b.y - frozen.y) <= Bubble.RADIUS * (b.scale_y + frozen.scale_y))) {
 				/* the center of the bubbles are close enough to collide */
 				b.stop ();
 				b.expand ();
-				assert (moving_bubbles.contains (b));
 				moving_bubbles.remove (b);
 				frozen_bubbles.add (b);
 				counter++;
@@ -162,7 +166,6 @@ public class Bubbles.Board {
 		assert (frozen_bubbles.contains (b) == true);
 		frozen_bubbles.remove (b);
 		if (frozen_bubbles.size == 0) {
-			moving_bubbles.clear ();
 			_on_game_over ();
 		}
 	}
@@ -265,11 +268,12 @@ public class Bubbles.Board {
 	public void _on_game_over () {
 		scores.append (out iter);
 		scores.set (iter,
-					0, "Johnny",
-					1, "tarace",
+					0, username,
+					1, "someday",
 					2, 1000,
 					-1);
- 		score = @"<b>Game over</b>\nYou caused a chain reaction of <b>$(counter)/$(population)</b>";
+		string win = (counter == population) ? "Congratulations!" : "Game over.";
+ 		score = @"<b>$(win)</b>\nYou caused a chain reaction of <b>$(counter)/$(population)</b>";
 		go_label.set_markup (score);
 		var response = go_dialog.run ();
 		switch (response) {
@@ -294,6 +298,7 @@ public class Bubbles.Board {
 		counter = 0;
 		moving_bubbles.clear ();
 		frozen_bubbles.clear ();
-		pointer.reset ();
+//		pointer.reset ();
+		pointer = new CursorBubble ();
 	}
 }
