@@ -97,7 +97,6 @@ public class Bubbles.Board {
 	}
 
 	public void run () {
-		this.reset ();
 		assert (window != null);
 
 		uint8 red, green, blue;
@@ -126,7 +125,6 @@ public class Bubbles.Board {
 		}
 
 		window.show_all ();
-		debug ("Out of run.");
 	}
 
 	public bool _on_motion_event (Clutter.MotionEvent event) {
@@ -167,6 +165,7 @@ public class Bubbles.Board {
 	public void _on_bubble_end_fadeout (Bubble b) {
 		assert (frozen_bubbles.contains (b) == true);
 		frozen_bubbles.remove (b);
+		stage.remove_actor (b);
 		if (frozen_bubbles.size == 0) {
 			_on_game_over ();
 		}
@@ -280,9 +279,9 @@ public class Bubbles.Board {
 		var response = go_dialog.run ();
 		switch (response) {
 		case 0:
-			/* retry */
 			debug ("Retry!");
 			go_dialog.hide ();
+			this.reset ();
 			this.run ();
 			break;
 		case 1:
@@ -297,11 +296,16 @@ public class Bubbles.Board {
 	public void reset () {
 		freeze = false;
 		counter = 0;
+		if (moving_bubbles.size != 0) {
+			foreach (BubbleOther b in moving_bubbles) {
+				stage.remove_actor (b);
+			}
+		}
+
 		moving_bubbles.clear ();
 		frozen_bubbles.clear ();
-		this.pointer = new CursorBubble ();
-		this.pointer.end_fadeout.connect (_on_bubble_end_fadeout);
-		stage.remove_all ();
+
+		pointer.reset ();
 		stage.add_actor (pointer);
 	}
 }
