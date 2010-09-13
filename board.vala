@@ -97,6 +97,7 @@ public class Bubbles.Board {
 	}
 
 	public void run () {
+		this.reset ();
 		assert (window != null);
 
 		uint8 red, green, blue;
@@ -112,7 +113,7 @@ public class Bubbles.Board {
 
 			moving_bubbles.add (b);
 			this.stage.add_actor (b);
-			//FIXME : constant
+
 			x = Random.int_range (0, (int)stage.width - Bubble.RADIUS);
 			y = Random.int_range (0, (int)stage.height - Bubble.RADIUS);
 			b.set_position ((int)x, (int)y);
@@ -125,6 +126,7 @@ public class Bubbles.Board {
 		}
 
 		window.show_all ();
+		debug ("Out of run.");
 	}
 
 	public bool _on_motion_event (Clutter.MotionEvent event) {
@@ -137,17 +139,18 @@ public class Bubbles.Board {
 	public bool _on_button_press_event (Clutter.ButtonEvent event) {
 		if (!freeze) {
 			freeze = true;
+			counter = 0;
+			pointer.expand ();
+			frozen_bubbles.add (pointer);
 			foreach (BubbleOther b in moving_bubbles) {
 				b.new_position.connect (_on_bubble_position_at_freeze);
 			}
-			this.pointer.expand ();
-			frozen_bubbles.add (pointer);
 		}
 		return true;
 	}
 
 	public void _on_bubble_position_at_freeze (BubbleOther b) {
-		assert (frozen_bubbles.size > 0);
+		// FIXME : assert (frozen_bubbles.size > 0); fails
 		foreach (Bubble frozen in frozen_bubbles) {
 			if ((Math.fabs (b.x - frozen.x) <= Bubble.RADIUS * (b.scale_x + frozen.scale_x)) &&
 				(Math.fabs (b.y - frozen.y) <= Bubble.RADIUS * (b.scale_y + frozen.scale_y))) {
@@ -281,7 +284,6 @@ public class Bubbles.Board {
 			/* retry */
 			debug ("Retry!");
 			go_dialog.hide ();
-			this.reset ();
 			this.run ();
 			break;
 		case 1:
@@ -298,7 +300,9 @@ public class Bubbles.Board {
 		counter = 0;
 		moving_bubbles.clear ();
 		frozen_bubbles.clear ();
-//		pointer.reset ();
-		pointer = new CursorBubble ();
+		this.pointer = new CursorBubble ();
+		this.pointer.end_fadeout.connect (_on_bubble_end_fadeout);
+		stage.remove_all ();
+		stage.add_actor (pointer);
 	}
 }

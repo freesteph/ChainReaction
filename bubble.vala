@@ -49,7 +49,6 @@ public abstract class Bubble : Clutter.CairoTexture {
 			{
 				idle_time.start ();
 			});
-		// FIXME : I don't like lamba methods all over
 	}
 
 	public void fadeout () {
@@ -57,7 +56,7 @@ public abstract class Bubble : Clutter.CairoTexture {
 		scale_time.direction = Clutter.TimelineDirection.BACKWARD;
 		scale_time.start ();
 		scale_time.disconnect (signal_handler);
-		scale_time.completed.connect ( () =>
+		signal_handler = scale_time.completed.connect ( () =>
 			{
 				end_fadeout (this);
 			});
@@ -66,5 +65,8 @@ public abstract class Bubble : Clutter.CairoTexture {
 	public void reset () {
 		this.set_scale (1, 1);
 		scale_time.stop ();
+		scale_time.direction = Clutter.TimelineDirection.FORWARD;
+		scale_time.disconnect (signal_handler);
+		idle_time.stop ();
 	}
 }
