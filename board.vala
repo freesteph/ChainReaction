@@ -26,12 +26,13 @@ public class Bubbles.Board {
 	private string username;
 
 	public static bool freeze = false;
+	private static int counter = 0;
+	private string score;
 	private uint population;
+
 	private Gee.ArrayList<BubbleOther> moving_bubbles;
 	private Gee.ArrayList<Bubble> frozen_bubbles;
 	private CursorBubble pointer;
-	private int counter;
-	private string score;
 	// linked list ? FIXME
 
 	public Board (uint pop) {
@@ -147,7 +148,6 @@ public class Bubbles.Board {
 	}
 
 	public void _on_bubble_position_at_freeze (BubbleOther b) {
-		// FIXME : assert (frozen_bubbles.size > 0); fails
 		foreach (Bubble frozen in frozen_bubbles) {
 			if ((Math.fabs (b.x - frozen.x) <= Bubble.RADIUS * (b.scale_x + frozen.scale_x)) &&
 				(Math.fabs (b.y - frozen.y) <= Bubble.RADIUS * (b.scale_y + frozen.scale_y))) {
@@ -267,6 +267,7 @@ public class Bubbles.Board {
 	}
 
 	public void _on_game_over () {
+		assert (stage.get_n_children () == (moving_bubbles.size));
 		scores.append (out iter);
 		scores.set (iter,
 					0, username,
@@ -299,6 +300,14 @@ public class Bubbles.Board {
 		if (moving_bubbles.size != 0) {
 			foreach (BubbleOther b in moving_bubbles) {
 				stage.remove_actor (b);
+			}
+		}
+
+		// FIXME : the following code should never happen : the game ends when
+		// frozen_bubbles.size == 0 and we remove the actor each time it's decremented.
+		if (frozen_bubbles.size != 0) {
+			foreach (Bubble bu in frozen_bubbles) {
+				stage.remove_actor (bu);
 			}
 		}
 
