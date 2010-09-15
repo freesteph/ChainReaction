@@ -47,6 +47,7 @@ public class Bubbles.Board {
 
 		window = builder.get_object ("window1") as Gtk.Window;
 		vbox = builder.get_object ("vbox1") as Gtk.VBox;
+		builder.connect_signals (this);
 
 		embed = new GtkClutter.Embed ();
 		embed.set_size_request (640, 480);
@@ -143,6 +144,7 @@ public class Bubbles.Board {
 			foreach (BubbleOther b in moving_bubbles) {
 				b.new_position.connect (_on_bubble_position_at_freeze);
 			}
+			assert (stage.get_n_children () == population + 1);
 		}
 		return true;
 	}
@@ -315,6 +317,7 @@ public class Bubbles.Board {
 		frozen_bubbles.clear ();
 
 		pointer.reset ();
+		stage.remove_all ();
 		stage.add_actor (pointer);
 	}
 }
