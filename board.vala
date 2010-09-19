@@ -127,6 +127,7 @@ public class Bubbles.Board {
 		}
 
 		window.show_all ();
+		Clutter.set_motion_events_enabled (false);
 	}
 
 	public bool _on_motion_event (Clutter.MotionEvent event) {
