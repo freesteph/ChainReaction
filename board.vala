@@ -167,17 +167,9 @@ public class Bubbles.Board {
 
 	public void _on_bubble_end_fadeout (Bubble b) {
 		assert (frozen_bubbles.contains (b) == true);
-		/* FIXME : sh*t happens over here. We try to remove a
-		   timed-out bubble (the next assertion does not fail), but
-		   it's not on the stage. Note that both moving and frozen
-		   bubbles Gee.ArrayLists get cleared at the end of the
-		   game. */
-		assert (frozen_bubbles.contains (b));
-		debug ("Removing a frozen bubble from the array....");
 		frozen_bubbles.remove (b);
-		debug ("from the stage...");
 		stage.remove_actor (b);
-		debug ("Done.");
+
 		if (frozen_bubbles.size == 0) {
 			_on_game_over ();
 		}
