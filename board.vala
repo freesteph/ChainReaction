@@ -167,8 +167,17 @@ public class Bubbles.Board {
 
 	public void _on_bubble_end_fadeout (Bubble b) {
 		assert (frozen_bubbles.contains (b) == true);
+		/* FIXME : sh*t happens over here. We try to remove a
+		   timed-out bubble (the next assertion does not fail), but
+		   it's not on the stage. Note that both moving and frozen
+		   bubbles Gee.ArrayLists get cleared at the end of the
+		   game. */
+		assert (frozen_bubbles.contains (b));
+		debug ("Removing a frozen bubble from the array....");
 		frozen_bubbles.remove (b);
+		debug ("from the stage...");
 		stage.remove_actor (b);
+		debug ("Done.");
 		if (frozen_bubbles.size == 0) {
 			_on_game_over ();
 		}
@@ -300,25 +309,12 @@ public class Bubbles.Board {
 	public void reset () {
 		freeze = false;
 		counter = 0;
-		if (moving_bubbles.size != 0) {
-			foreach (BubbleOther b in moving_bubbles) {
-				stage.remove_actor (b);
-			}
-		}
-
-		/* the following code should never happen : the game
-		   ends when frozen_bubbles.size == 0 */
-		if (frozen_bubbles.size != 0) {
-			foreach (Bubble bu in frozen_bubbles) {
-				stage.remove_actor (bu);
-			}
-		}
 
 		moving_bubbles.clear ();
 		frozen_bubbles.clear ();
+		stage.remove_all ();
 
 		pointer.reset ();
-		stage.remove_all ();
 		stage.add_actor (pointer);
 	}
 }
