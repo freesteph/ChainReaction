@@ -8,7 +8,7 @@ public class Bubbles.BubbleOther : Bubble {
 	public double angle;
 	public Clutter.Path path;
 
-	private Clutter.BehaviourPath behaviour;
+	private Clutter.BehaviourPath behaviour_path;
 	private Clutter.Alpha alpha;
 	private Clutter.Timeline timeline;
 
@@ -33,8 +33,8 @@ public class Bubbles.BubbleOther : Bubble {
 		timeline.new_frame.connect (_on_new_frame);
 
 		alpha = new Clutter.Alpha.full (timeline, Clutter.AnimationMode.LINEAR);
-		behaviour = new Clutter.BehaviourPath (alpha, path);
-		behaviour.apply (this);
+		behaviour_path = new Clutter.BehaviourPath (alpha, path);
+		behaviour_path.apply (this);
 
 		this.set_scale (SCALE_FACTOR, SCALE_FACTOR);
 	}
@@ -54,5 +54,6 @@ public class Bubbles.BubbleOther : Bubble {
 
 	public void stop () {
 		timeline.pause ();
+		behaviour_path.remove_all ();
 	}
 }
