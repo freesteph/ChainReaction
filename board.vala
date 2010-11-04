@@ -310,6 +310,14 @@ public class Bubbles.Board {
 		freeze = false;
 		counter = 0;
 
+		foreach (BubbleOther b in moving_bubbles) {
+			b.destroy ();
+		}
+
+		foreach (Bubble b in frozen_bubbles) {
+			b.destroy ();
+		}
+
 		moving_bubbles.clear ();
 		frozen_bubbles.clear ();
 		stage.remove_all ();
