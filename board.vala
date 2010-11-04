@@ -306,8 +306,8 @@ public class Bubbles.Board {
 			}
 		}
 
-		// FIXME : the following code should never happen : the game ends when
-		// frozen_bubbles.size == 0 and we remove the actor each time it's decremented.
+		/* the following code should never happen : the game
+		   ends when frozen_bubbles.size == 0 */
 		if (frozen_bubbles.size != 0) {
 			foreach (Bubble bu in frozen_bubbles) {
 				stage.remove_actor (bu);

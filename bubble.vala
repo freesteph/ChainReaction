@@ -41,7 +41,11 @@ public abstract class Bubble : Clutter.CairoTexture {
 			});
 
 	}
-		
+
+	~Bubble () {
+		this.behaviour_scale.remove_all ();
+	}
+
 	public void expand () {
 		behaviour_scale.set_bounds (this.scale_x, this.scale_y, 1, 1);
 		scale_time.start ();
