@@ -1,4 +1,4 @@
-BUBBLE_PACKAGES=--pkg clutter-gtk-0.10 \
+BUBBLE_PACKAGES=--pkg clutter-gtk-1.0 \
 		--pkg gee-1.0
 
 bubble: bubble.vala board.vala main.vala bubble-cursor.vala bubble-others.vala
